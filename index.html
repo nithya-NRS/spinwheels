@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Spin & Discover</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0f172a, #1e1b4b);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 850px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #cbd5e1;
+    margin-bottom: 25px;
+}
+
+.game-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 25px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+}
+
+.wheel-area {
+    position: relative;
+    width: 340px;
+    height: 340px;
+    margin: 10px auto 25px;
+}
+
+#wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 8px solid white;
+    transition: transform 4s cubic-bezier(.17,.67,.12,.99);
+
+    background: conic-gradient(
+        #ef4444 0deg 40deg,
+        #f97316 40deg 80deg,
+        #eab308 80deg 120deg,
+        #22c55e 120deg 160deg,
+        #06b6d4 160deg 200deg,
+        #3b82f6 200deg 240deg,
+        #6366f1 240deg 280deg,
+        #8b5cf6 280deg 320deg,
+        #ec4899 320deg 360deg
+    );
+}
+
+.wheel-labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.label {
+    position: absolute;
+    font-size: 11px;
+    font-weight: bold;
+    width: 82px;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    text-shadow: 1px 1px 3px black;
+}
+
+/* Nine evenly spaced label positions */
+.l1 { top: 16%; left: 50%; }
+.l2 { top: 24%; left: 76%; }
+.l3 { top: 43%; left: 87%; }
+.l4 { top: 68%; left: 82%; }
+.l5 { top: 84%; left: 62%; }
+.l6 { top: 84%; left: 32%; }
+.l7 { top: 65%; left: 14%; }
+.l8 { top: 39%; left: 14%; }
+.l9 { top: 23%; left: 27%; }
+
+.pointer {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 40px solid white;
+    z-index: 5;
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 14px 30px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #facc15;
+    color: #111827;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.result {
+    margin-top: 25px;
+    display: none;
+}
+
+.result h2 {
+    margin-bottom: 10px;
+}
+
+.challenge {
+    background: rgba(0,0,0,0.25);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+input {
+    width: 100%;
+    max-width: 450px;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.message {
+    margin-top: 15px;
+    font-weight: bold;
+    min-height: 25px;
+}
+
+.score {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.small {
+    color: #cbd5e1;
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+@media(max-width:500px) {
+    h1 {
+        font-size: 30px;
+    }
+
+    .game-box {
+        padding: 20px 12px;
+    }
+
+    .wheel-area {
+        width: 290px;
+        height: 290px;
+    }
+
+    .label {
+        font-size: 9px;
+        width: 68px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🎡 Spin & Discover</h1>
+
+    <p class="subtitle">
+        Spin the wheel. Explore the magazine. Complete the challenge!
+    </p>
+
+    <div class="game-box">
+
+        <div class="wheel-area">
+
+            <div class="pointer"></div>
+
+            <div id="wheel"></div>
+
+            <div class="wheel-labels">
+                <div class="label l1">DRAWING</div>
+                <div class="label l2">POEM</div>
+                <div class="label l3">AI vs REAL</div>
+                <div class="label l4">INTERNSHIP</div>
+                <div class="label l5">ARTICLES</div>
+                <div class="label l7">NPTEL</div>
+                <div class="label l8">VAC</div>
+                <div class="label l9">AWS</div>
+            </div>
+
+        </div>
+
+        <button id="spinButton" onclick="spinWheel()">
+            🎡 SPIN NOW
+        </button>
+
+        <div class="result" id="result">
+
+            <h2 id="category"></h2>
+
+            <div class="challenge" id="challenge"></div>
+
+            <input
+                type="text"
+                id="answer"
+                placeholder="Type your answer here..."
+                autocomplete="off"
+            >
+
+            <br>
+
+            <button onclick="checkAnswer()">
+                ✅ CHECK ANSWER
+            </button>
+
+            <div class="message" id="message"></div>
+
+        </div>
+
+        <div class="score">
+            ⭐ Score: <span id="score">0</span>
+        </div>
+
+        <p class="small">
+            Explore the magazine carefully to find the answers!
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+
+const sections = [
+
+    {
+        name: "🎨 DRAWING",
+        challenge: "What can you see in the drawing?",
+        answers: ["god", "sports person", "birds", "boy"]
+    },
+
+    {
+        name: "📝 POEM",
+        challenge: "Find the name of a person mentioned in the poem.",
+        answers: ["Chandru"]
+    },
+
+    {
+        name: "🤖 AI vs REAL",
+        challenge: "Which image is AI?",
+        answers: ["right image", "left image"]
+    },
+
+    {
+        name: "👩‍💻 INTERNSHIP",
+        challenge: "Which month was the internship?",
+        answers: ["may"]
+    },
+
+    {
+        name: "📰 ARTICLES",
+        challenge: "Name one article title.",
+        answers: [
+            "when the attacker is no longer human",
+            "cybersecurity in the age of astra6: why humans still matter",
+            "ai-powered cyber security"
+        ]
+    },
+
+    {
+        name: "🎓 NPTEL",
+        challenge: "What is the name of the online learning platform mentioned in this section?",
+        answers: ["nptel"]
+    },
+
+    {
+        name: "📖 VAC",
+        challenge: "What does VAC stand for?",
+        answers: ["value added courses"]
+    },
+
+    {
+        name: "☁️ AWS",
+        challenge: "Who were the two students who participated in AWS?",
+        answers: [
+            "replace with first student name",
+            "replace with second student name"
+        ]
+    }
+
+];
+
+let rotation = 0;
+let spinning = false;
+let currentSection = null;
+let score = 0;
+let answeredCurrent = false;
+
+function spinWheel() {
+
+    if (spinning) return;
+
+    spinning = true;
+
+    document.getElementById("spinButton").disabled = true;
+    document.getElementById("result").style.display = "none";
+    document.getElementById("message").innerText = "";
+    document.getElementById("answer").value = "";
+
+    answeredCurrent = false;
+
+    const randomIndex =
+        Math.floor(Math.random() * sections.length);
+
+    currentSection = sections[randomIndex];
+
+    const randomExtra =
+        Math.floor(Math.random() * 360);
+
+    rotation += 360 * 5 + randomExtra;
+
+    document.getElementById("wheel").style.transform =
+        `rotate(${rotation}deg)`;
+
+    setTimeout(() => {
+
+        document.getElementById("category").innerText =
+            currentSection.name;
+
+        document.getElementById("challenge").innerText =
+            currentSection.challenge;
+
+        document.getElementById("result").style.display =
+            "block";
+
+        spinning = false;
+
+        document.getElementById("spinButton").disabled =
+            false;
+
+    }, 4200);
+
+}
+
+function checkAnswer() {
+
+    if (!currentSection || answeredCurrent) return;
+
+    const userAnswer =
+        document.getElementById("answer").value
+        .trim()
+        .toLowerCase();
+
+    const message =
+        document.getElementById("message");
+
+    if (userAnswer === "") {
+
+        message.innerText =
+            "⚠️ Please enter an answer.";
+
+        return;
+    }
+
+    const correct =
+        currentSection.answers.some(answer => {
+            const accepted = answer.toLowerCase();
+
+            return userAnswer === accepted ||
+                (accepted.length > 3 &&
+                userAnswer.includes(accepted));
+        });
+
+    if (correct) {
+
+        score += 10;
+
+        document.getElementById("score").innerText =
+            score;
+
+        message.innerText =
+            "🎉 Correct! +10 points!";
+
+        answeredCurrent = true;
+
+    } else {
+
+        message.innerText =
+            "❌ Not quite! Check the magazine and try again.";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+
